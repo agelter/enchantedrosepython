@@ -1,0 +1,20 @@
+[Unit]
+Description = Enchanted Rose Web API
+After = network.target
+
+[Service]
+PermissionsStartOnly = true
+PIDFile = /run/enchantedrose_api/enchantedrose_api.pid
+User = aat
+Group = aat
+WorkingDirectory = /home/aat/enchantedrosepython/python
+ExecStartPre = /bin/mkdir /run/enchantedrose_api
+ExecStartPre = /bin/chown -R aat:aat /run/enchantedrose_api
+ExecStart = /usr/bin/env gunicorn -c /home/aat/enchantedrosepython/python/gunicorn.conf.py --chdir /home/aat/enchantedrosepython/python rose:app --pid /run/enchantedrose_api/enchantedrose_api.pid
+ExecReload = /bin/kill -s HUP $MAINPID
+ExecStop = /bin/kill -s TERM $MAINPID
+ExecStopPost = /bin/rm -rf /run/enchantedrose_api
+PrivateTmp = true
+
+[Install]
+WantedBy = multi-user.target
